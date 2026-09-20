@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - إحصائيات الطعون</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:Tahoma,Arial,sans-serif;background:#f3f6fa;color:#172033}
+.container{max-width:1450px;margin:auto;padding:24px}
+.header{background:linear-gradient(135deg,#123b5d,#176b87);color:#fff;border-radius:20px;padding:26px 30px;margin-bottom:20px;box-shadow:0 10px 30px #123b5d22}
+.header h1{margin:0 0 8px;font-size:28px} .header p{margin:0;opacity:.85}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 6px 22px #17203312;border:1px solid #e7edf3}
+.card .label{color:#68758a;font-size:14px;margin-bottom:10px} .card .value{font-size:32px;font-weight:800}
+.grid{display:grid;grid-template-columns:1.55fr 1fr;gap:20px;margin-bottom:20px}
+.panel{background:#fff;border-radius:16px;padding:20px;box-shadow:0 6px 22px #17203312;border:1px solid #e7edf3}
+.panel h2{font-size:18px;margin:0 0 16px} .chart-wrap{height:430px}
+.toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:15px;flex-wrap:wrap}
+input{padding:11px 14px;border:1px solid #d6dee8;border-radius:10px;width:min(420px,100%);font-size:14px;outline:none}
+table{width:100%;border-collapse:collapse} th,td{padding:12px 10px;border-bottom:1px solid #edf0f4;text-align:right;font-size:14px}
+th{background:#f7f9fb;color:#536174;position:sticky;top:0} tr:hover{background:#f8fbfd}
+.today{display:inline-block;min-width:28px;text-align:center;padding:4px 8px;border-radius:999px;background:#e8f5ef;color:#147a4b;font-weight:700}
+.footer{text-align:center;color:#748094;font-size:12px;padding:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr} .cards{grid-template-columns:1fr} .chart-wrap{height:360px} .container{padding:12px} .header{padding:20px} .header h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="container">
+  <section class="header">
+    <h1>لوحة مؤشرات الطعون</h1>
+    <p>إجمالي الطعون موزع حسب النيابة الكلية — بيانات مقدمة من المستخدم</p>
+  </section>
+
+  <section class="cards">
+    <div class="card"><div class="label">إجمالي الطعون</div><div class="value">15,236</div></div>
+    <div class="card"><div class="label">الطعون اليوم</div><div class="value">15</div></div>
+    <div class="card"><div class="label">النيابات التي لديها طعون</div><div class="value">47</div></div>
+  </section>
+
+  <section class="grid">
+    <div class="panel">
+      <h2>أعلى 10 نيابات من حيث إجمالي الطعون</h2>
+      <div class="chart-wrap"><canvas id="topChart"></canvas></div>
+    </div>
+    <div class="panel">
+      <h2>الطعون اليوم حسب النيابة</h2>
+      <div class="chart-wrap"><canvas id="todayChart"></canvas></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="toolbar">
+      <h2>تفاصيل جميع النيابات</h2>
+      <input id="search" type="search" placeholder="ابحث باسم النيابة...">
+    </div>
+    <div style="overflow:auto;max-height:620px">
+      <table id="dataTable">
+        <thead><tr><th>#</th><th>النيابة الكلية</th><th>إجمالي الطعون</th><th>الطعون اليوم</th></tr></thead>
+        <tbody><tr data-name="جنوب المنصورة الكلية"><td>1</td><td class="name">جنوب المنصورة الكلية</td><td>1,482</td><td><span class="today">1</span></td></tr>
+<tr data-name="جنوب الجيزة الكلية"><td>2</td><td class="name">جنوب الجيزة الكلية</td><td>718</td><td><span class="today">0</span></td></tr>
+<tr data-name="شبين الكوم الكلية"><td>3</td><td class="name">شبين الكوم الكلية</td><td>645</td><td><span class="today">0</span></td></tr>
+<tr data-name="جنوب الزقازيق الكلية"><td>4</td><td class="name">جنوب الزقازيق الكلية</td><td>630</td><td><span class="today">0</span></td></tr>
+<tr data-name="غرب طنطا الكلية"><td>5</td><td class="name">غرب طنطا الكلية</td><td>578</td><td><span class="today">4</span></td></tr>
+<tr data-name="كفرالشيخ الكلية"><td>6</td><td class="name">كفرالشيخ الكلية</td><td>553</td><td><span class="today">0</span></td></tr>
+<tr data-name="قنا الكلية"><td>7</td><td class="name">قنا الكلية</td><td>509</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال المنصورة الكلية"><td>8</td><td class="name">شمال المنصورة الكلية</td><td>505</td><td><span class="today">0</span></td></tr>
+<tr data-name="جنوب المنيا الكلية"><td>9</td><td class="name">جنوب المنيا الكلية</td><td>480</td><td><span class="today">0</span></td></tr>
+<tr data-name="بنى سويف الكلية"><td>10</td><td class="name">بنى سويف الكلية</td><td>479</td><td><span class="today">3</span></td></tr>
+<tr data-name="شرق القاهرة الكلية"><td>11</td><td class="name">شرق القاهرة الكلية</td><td>448</td><td><span class="today">0</span></td></tr>
+<tr data-name="اكتوبر الكلية"><td>12</td><td class="name">اكتوبر الكلية</td><td>394</td><td><span class="today">0</span></td></tr>
+<tr data-name="شرق طنطا الكلية"><td>13</td><td class="name">شرق طنطا الكلية</td><td>384</td><td><span class="today">1</span></td></tr>
+<tr data-name="جنوب القاهرة الكلية"><td>14</td><td class="name">جنوب القاهرة الكلية</td><td>370</td><td><span class="today">0</span></td></tr>
+<tr data-name="جنوب دمنهور الكلية"><td>15</td><td class="name">جنوب دمنهور الكلية</td><td>366</td><td><span class="today">0</span></td></tr>
+<tr data-name="الفيوم الكلية"><td>16</td><td class="name">الفيوم الكلية</td><td>361</td><td><span class="today">4</span></td></tr>
+<tr data-name="البحر الاحمر الكلية"><td>17</td><td class="name">البحر الاحمر الكلية</td><td>349</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال اسيوط الكلية"><td>18</td><td class="name">شمال اسيوط الكلية</td><td>348</td><td><span class="today">0</span></td></tr>
+<tr data-name="وسط دمنهور الكلية"><td>19</td><td class="name">وسط دمنهور الكلية</td><td>328</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال دمنهور الكلية"><td>20</td><td class="name">شمال دمنهور الكلية</td><td>313</td><td><span class="today">0</span></td></tr>
+<tr data-name="جنوب اسيوط الكلية"><td>21</td><td class="name">جنوب اسيوط الكلية</td><td>307</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال المنيا الكلية"><td>22</td><td class="name">شمال المنيا الكلية</td><td>306</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال بنها الكلية"><td>23</td><td class="name">شمال بنها الكلية</td><td>306</td><td><span class="today">0</span></td></tr>
+<tr data-name="الإسماعيلية الكلية"><td>24</td><td class="name">الإسماعيلية الكلية</td><td>268</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال سوهاج الكلية"><td>25</td><td class="name">شمال سوهاج الكلية</td><td>256</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال الزقازيق الكلية"><td>26</td><td class="name">شمال الزقازيق الكلية</td><td>249</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال الجيزة الكلية"><td>27</td><td class="name">شمال الجيزة الكلية</td><td>248</td><td><span class="today">0</span></td></tr>
+<tr data-name="المنتزة الكلية"><td>28</td><td class="name">المنتزة الكلية</td><td>238</td><td><span class="today">2</span></td></tr>
+<tr data-name="بورسعيد الكلية"><td>29</td><td class="name">بورسعيد الكلية</td><td>238</td><td><span class="today">0</span></td></tr>
+<tr data-name="جنوب بنها الكلية"><td>30</td><td class="name">جنوب بنها الكلية</td><td>227</td><td><span class="today">0</span></td></tr>
+<tr data-name="الدخيلة الكلية"><td>31</td><td class="name">الدخيلة الكلية</td><td>221</td><td><span class="today">0</span></td></tr>
+<tr data-name="القاهرة الجديدة الكلية"><td>32</td><td class="name">القاهرة الجديدة الكلية</td><td>213</td><td><span class="today">0</span></td></tr>
+<tr data-name="شرق الاسكندرية الكلية"><td>33</td><td class="name">شرق الاسكندرية الكلية</td><td>202</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال القاهرة الكلية"><td>34</td><td class="name">شمال القاهرة الكلية</td><td>179</td><td><span class="today">0</span></td></tr>
+<tr data-name="حلوان الكلية"><td>35</td><td class="name">حلوان الكلية</td><td>176</td><td><span class="today">0</span></td></tr>
+<tr data-name="غرب القاهرة الكلية"><td>36</td><td class="name">غرب القاهرة الكلية</td><td>160</td><td><span class="today">0</span></td></tr>
+<tr data-name="جنوب سوهاج الكلية"><td>37</td><td class="name">جنوب سوهاج الكلية</td><td>153</td><td><span class="today">0</span></td></tr>
+<tr data-name="السويس الكلية"><td>38</td><td class="name">السويس الكلية</td><td>146</td><td><span class="today">0</span></td></tr>
+<tr data-name="الاقصر الكلية"><td>39</td><td class="name">الاقصر الكلية</td><td>144</td><td><span class="today">0</span></td></tr>
+<tr data-name="وسط القاهرة الكلية"><td>40</td><td class="name">وسط القاهرة الكلية</td><td>140</td><td><span class="today">0</span></td></tr>
+<tr data-name="اسوان الكلية"><td>41</td><td class="name">اسوان الكلية</td><td>124</td><td><span class="today">0</span></td></tr>
+<tr data-name="غرب الاسكندرية الكلية"><td>42</td><td class="name">غرب الاسكندرية الكلية</td><td>117</td><td><span class="today">0</span></td></tr>
+<tr data-name="دمياط الكلية"><td>43</td><td class="name">دمياط الكلية</td><td>101</td><td><span class="today">0</span></td></tr>
+<tr data-name="مرسى مطروح الكلية"><td>44</td><td class="name">مرسى مطروح الكلية</td><td>89</td><td><span class="today">0</span></td></tr>
+<tr data-name="الوادى الجديد الكلية"><td>45</td><td class="name">الوادى الجديد الكلية</td><td>77</td><td><span class="today">0</span></td></tr>
+<tr data-name="شمال سيناء الكلية"><td>46</td><td class="name">شمال سيناء الكلية</td><td>67</td><td><span class="today">0</span></td></tr>
+<tr data-name="جنوب سيناء الكلية"><td>47</td><td class="name">جنوب سيناء الكلية</td><td>44</td><td><span class="today">0</span></td></tr>
+<tr data-name="الشئون الاقتصادية وغسل الاموال الاسكندرية"><td>48</td><td class="name">الشئون الاقتصادية وغسل الاموال الاسكندرية</td><td>0</td><td><span class="today">0</span></td></tr>
+<tr data-name="مركز امبابة الكلية (لاغى)"><td>49</td><td class="name">مركز امبابة الكلية (لاغى)</td><td>0</td><td><span class="today">0</span></td></tr></tbody>
+      </table>
+    </div>
+  </section>
+  <div class="footer">إجمالي الصفوف = 49 نيابة/جهة • تم التحقق من أن مجموع إجمالي الطعون = 15,236</div>
+</div>
+
+<script>
+const topLabels=["جنوب المنصورة الكلية", "جنوب الجيزة الكلية", "شبين الكوم الكلية", "جنوب الزقازيق الكلية", "غرب طنطا الكلية", "كفرالشيخ الكلية", "قنا الكلية", "شمال المنصورة الكلية", "جنوب المنيا الكلية", "بنى سويف الكلية"];
+const topValues=[1482, 718, 645, 630, 578, 553, 509, 505, 480, 479];
+new Chart(document.getElementById('topChart'), {
+  type:'bar',
+  data:{labels:topLabels,datasets:[{label:'إجمالي الطعون',data:topValues,borderWidth:1}]},
+  options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{beginAtZero:true}}}
+});
+
+const todayLabels=["جنوب المنصورة الكلية", "غرب طنطا الكلية", "بنى سويف الكلية", "شرق طنطا الكلية", "الفيوم الكلية", "المنتزة الكلية"];
+const todayValues=[1, 4, 3, 1, 4, 2];
+new Chart(document.getElementById('todayChart'), {
+  type:'doughnut',
+  data:{labels:todayLabels,datasets:[{data:todayValues,borderWidth:2}]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+});
+
+document.getElementById('search').addEventListener('input', function(){
+  const q=this.value.trim().toLowerCase();
+  document.querySelectorAll('#dataTable tbody tr').forEach(tr=>{
+    tr.style.display = tr.dataset.name.includes(q) ? '' : 'none';
+  });
+});
+</script>
+</body>
+</html>

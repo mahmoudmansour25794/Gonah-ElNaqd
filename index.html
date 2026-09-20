@@ -22,20 +22,49 @@ table{width:100%;border-collapse:collapse} th,td{padding:12px 10px;border-bottom
 th{background:#f7f9fb;color:#536174;position:sticky;top:0} tr:hover{background:#f8fbfd}
 .today{display:inline-block;min-width:28px;text-align:center;padding:4px 8px;border-radius:999px;background:#e8f5ef;color:#147a4b;font-weight:700}
 .footer{text-align:center;color:#748094;font-size:12px;padding:18px}
-@media(max-width:900px){.grid{grid-template-columns:1fr} .cards{grid-template-columns:1fr} .chart-wrap{height:360px} .container{padding:12px} .header{padding:20px} .header h1{font-size:22px}}
+@media(max-width:900px){.grid{grid-template-columns:1fr} .panel > div[style*='grid-template-columns:repeat(5']{grid-template-columns:repeat(2,1fr)!important} .cards{grid-template-columns:1fr} .chart-wrap{height:360px} .container{padding:12px} .header{padding:20px} .header h1{font-size:22px}}
 </style>
 </head>
 <body>
 <div class="container">
   <section class="header">
     <h1>لوحة مؤشرات الطعون</h1>
-    <p>إجمالي الطعون موزع حسب النيابة الكلية — بيانات مقدمة من المستخدم</p>
+    <p>إحصائيات الطعون خلال الفترة من 2000-01-01 إلى 2026-09-20</p>
   </section>
 
   <section class="cards">
-    <div class="card"><div class="label">إجمالي الطعون</div><div class="value">15,236</div></div>
+    <div class="card"><div class="label">إجمالي الطعون حسب النيابات</div><div class="value">15,236</div></div>
     <div class="card"><div class="label">الطعون اليوم</div><div class="value">15</div></div>
-    <div class="card"><div class="label">النيابات التي لديها طعون</div><div class="value">47</div></div>
+    <div class="card"><div class="label">إجمالي العمليات</div><div class="value">15,289</div></div>
+    <div class="card"><div class="label">نجح</div><div class="value">15,236</div></div>
+    <div class="card"><div class="label">فشل</div><div class="value">53</div></div>
+    <div class="card"><div class="label">نسبة النجاح</div><div class="value">99.65%</div></div>
+  </section>
+
+  <section class="panel" style="margin-bottom:20px">
+    <h2>الفترة الزمنية ونتائج المعالجة</h2>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+      <div style="background:#f7f9fb;padding:15px;border-radius:12px">
+        <div style="color:#68758a;font-size:13px">من</div>
+        <strong style="font-size:18px">2000-01-01</strong>
+      </div>
+      <div style="background:#f7f9fb;padding:15px;border-radius:12px">
+        <div style="color:#68758a;font-size:13px">إلى</div>
+        <strong style="font-size:18px">2026-09-20</strong>
+      </div>
+      <div style="background:#f7f9fb;padding:15px;border-radius:12px">
+        <div style="color:#68758a;font-size:13px">إجمالي</div>
+        <strong style="font-size:18px">15,289</strong>
+      </div>
+      <div style="background:#e8f5ef;padding:15px;border-radius:12px">
+        <div style="color:#147a4b;font-size:13px">نجح</div>
+        <strong style="font-size:18px;color:#147a4b">15,236</strong>
+      </div>
+      <div style="background:#fff0f0;padding:15px;border-radius:12px">
+        <div style="color:#b42318;font-size:13px">فشل</div>
+        <strong style="font-size:18px;color:#b42318">53</strong>
+      </div>
+    </div>
   </section>
 
   <section class="grid">
@@ -47,6 +76,11 @@ th{background:#f7f9fb;color:#536174;position:sticky;top:0} tr:hover{background:#
       <h2>الطعون اليوم حسب النيابة</h2>
       <div class="chart-wrap"><canvas id="todayChart"></canvas></div>
     </div>
+  </section>
+
+  <section class="panel" style="margin-bottom:20px">
+    <h2>ملخص حالة العمليات</h2>
+    <div class="chart-wrap" style="height:320px"><canvas id="statusChart"></canvas></div>
   </section>
 
   <section class="panel">
@@ -127,6 +161,26 @@ new Chart(document.getElementById('todayChart'), {
   type:'doughnut',
   data:{labels:todayLabels,datasets:[{data:todayValues,borderWidth:2}]},
   options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}
+});
+
+new Chart(document.getElementById('statusChart'), {
+  type:'doughnut',
+  data:{
+    labels:['نجح','فشل'],
+    datasets:[{data:[15236,53],borderWidth:2}]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'bottom'},
+      tooltip:{callbacks:{label:function(ctx){
+        const total=15289;
+        const pct=(ctx.raw/total*100).toFixed(2);
+        return ctx.label + ': ' + ctx.raw.toLocaleString('en-US') + ' (' + pct + '%)';
+      }}}
+    }
+  }
 });
 
 document.getElementById('search').addEventListener('input', function(){
